@@ -1,7 +1,6 @@
-package com.nice.core.netty.message;
+package com.nice.gatway.parser;
 import com.google.protobuf.GeneratedMessage;
 import com.nice.core.common.PackageConstant;
-import com.nice.core.netty.cocdex.Tea;
 import com.nice.core.netty.session.Session;
 import com.nice.core.utils.ProtoUtil;
 import io.netty.buffer.ByteBuf;

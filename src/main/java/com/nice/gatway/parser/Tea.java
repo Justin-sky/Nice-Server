@@ -1,5 +1,7 @@
-package com.nice.core.netty.cocdex;
+package com.nice.gatway.parser;
 
+import com.nice.core.netty.cocdex.ClientDate;
+import com.nice.core.netty.cocdex.NetData;
 import com.nice.core.utils.TimeUtil;
 
 import java.util.Random;

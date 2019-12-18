@@ -2,7 +2,7 @@ package com.nice.gatway.cocdex;
 
 import com.nice.gatway.SessionManager;
 import com.nice.core.utils.CtxUtil;
-import com.nice.core.netty.cocdex.Tea;
+import com.nice.gatway.parser.Tea;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

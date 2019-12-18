@@ -1,6 +1,6 @@
 package com.nice.gatway;
 import com.nice.core.netty.NettyEventProcessorInterface;
-import com.nice.core.netty.cocdex.PacketNetData;
+import com.nice.gatway.parser.PacketNetData;
 import com.nice.core.netty.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

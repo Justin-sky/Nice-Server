@@ -1,4 +1,4 @@
-package com.nice.core.netty.cocdex;
+package com.nice.gatway.parser;
 
 public class PacketNetData {
     //
