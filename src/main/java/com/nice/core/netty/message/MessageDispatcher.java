@@ -52,7 +52,7 @@ public class MessageDispatcher {
         Object handler = cmdExecutor.getHandler();
         //应该在此处提交到其它线程处理
         try {
-            cmdExecutor.getMethod().invoke(handler, session,  packet.getPacketData());
+            cmdExecutor.getMethod().invoke(handler, session,  packet.parseProtoNetData());
 
         }  catch (InvocationTargetException e) {
             LOGGER.error("message executor error,cmd={},msg={}", msgId, e.getTargetException().getMessage(), e);
