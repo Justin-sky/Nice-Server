@@ -3,6 +3,7 @@ package com.nice.core.netty.message;
 import com.nice.core.common.ClassScanner;
 import com.nice.core.netty.session.Session;
 import com.nice.core.utils.ProtoUtil;
+import com.nice.gatway.parser.PacketNetData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,7 @@ public class MessageDispatcher {
         for (Class<?> cls : messageCommandClasses) {
             try {
                 Object handler = cls.newInstance();
-                Method method = cls.getMethod("process", Msg.class);
+                Method method = cls.getMethod("process",Session.class, byte[].class);
                 int msgId = cls.getAnnotation(Handler.class).command();
                 CmdExecutor cmdExecutor = CMD_HANDLERS.get(msgId);
                 if (cmdExecutor != null) {
@@ -38,16 +39,10 @@ public class MessageDispatcher {
 
     }
 
-    public static void dispatch(Session session, int msgId, int uid, byte[] bytes, int index) throws Exception {
-        String msgInfo = ProtoUtil.allMsgMap.get(msgId);
-        Integer msg_num = MSG_ID_NUM.get(msgInfo);
-        if (msg_num == null) {
-            msg_num = 1;
-            MSG_ID_NUM.put(msgInfo, msg_num);
-        } else {
-            MSG_ID_NUM.put(msgInfo, ++msg_num);
-        }
-        LOGGER.error("dispatch->uid={}, msgId={},msg={}", uid, msgId, msgInfo);
+    public static void dispatch(Session session, PacketNetData packet) throws Exception {
+
+        int msgId = packet.getMsgId();
+
         CmdExecutor cmdExecutor = CMD_HANDLERS.get(msgId);
         if (cmdExecutor == null) {
             LOGGER.error("message executor missed,cmd={}", msgId);
@@ -56,9 +51,8 @@ public class MessageDispatcher {
 
         Object handler = cmdExecutor.getHandler();
         //应该在此处提交到其它线程处理
-        Msg msg = new Msg(session, bytes, uid, index);
         try {
-            cmdExecutor.getMethod().invoke(handler, msg);
+            cmdExecutor.getMethod().invoke(handler, session,  packet.getPacketData());
 
         }  catch (InvocationTargetException e) {
             LOGGER.error("message executor error,cmd={},msg={}", msgId, e.getTargetException().getMessage(), e);

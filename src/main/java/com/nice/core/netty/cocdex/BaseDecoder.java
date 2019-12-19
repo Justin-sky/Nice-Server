@@ -1,6 +1,6 @@
 package com.nice.core.netty.cocdex;
 
-import com.nice.gatway.parser.Tea;
+import com.nice.core.utils.ByteUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -14,9 +14,9 @@ public class BaseDecoder extends ByteToMessageDecoder {
 
     public BaseDecoder(){
     }
-    public short readLean(ByteBuf in){
+    public int readLen(ByteBuf in){
         in.markReaderIndex();
-        final byte[] buf = new byte[2];
+        final byte[] buf = new byte[4];
         for (int i = 0; i < buf.length; i ++) {
             if (!in.isReadable()) {
                 in.resetReaderIndex();
@@ -25,9 +25,9 @@ public class BaseDecoder extends ByteToMessageDecoder {
 
             buf[i] = in.readByte();
         }
-        int length =  Tea.byteToShort(buf, 0);
+        int length = ByteUtil.bytesToInt(buf, 0);
 
-        return (short) length;
+        return  length;
     }
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {

@@ -1,6 +1,7 @@
 package com.nice.gatway.cocdex;
 import com.nice.core.common.PackageConstant;
 import com.nice.core.netty.cocdex.BaseDecoder;
+import com.nice.gatway.parser.PacketNetData;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
@@ -16,20 +17,25 @@ public class ByteBufDecoder extends BaseDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
-        String secret_key = "";
         try {
-            int length = readLean(in);
+            int length = readLen(in);
             if (length <= 0) {
                 return;
             }
-            if (in.readableBytes() + PackageConstant.LENGTH_FIELD_LEN < length) {
+            int l = in.readableBytes();
+            if (in.readableBytes() < length) {
                 in.resetReaderIndex();
             } else {
-                ByteBuf message = in.readBytes(length - PackageConstant.LENGTH_FIELD_LEN);
-                out.add(message);
+                byte[] data = new byte[length];
+                in.readBytes(data);
+
+                PacketNetData packet = new PacketNetData();
+                packet.setPacketData(data);
+
+                out.add(packet);
             }
         } catch (Exception e) {
-            LOGGER.error("decode->secret_key={},emsg={}", secret_key, e.getMessage(), e);
+            LOGGER.error("decode->emsg={}", e.getMessage(), e);
         }
     }
 }

@@ -1,7 +1,13 @@
 package com.nice.gatway;
+import com.google.protobuf.GeneratedMessage;
 import com.nice.core.netty.NettyEventProcessorInterface;
+import com.nice.core.netty.message.MessageDispatcher;
+import com.nice.core.utils.MessageUtils;
 import com.nice.gatway.parser.PacketNetData;
 import com.nice.core.netty.session.Session;
+import net.protol.MsgIDDefineDic;
+import net.protol.common.Common;
+import net.protol.login.Login;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,20 +30,21 @@ public class NettyServerEventProcessor implements NettyEventProcessorInterface {
     public void onMessage(Session session, Object message) {
         try {
             PacketNetData packetNetData = (PacketNetData) message;
-            int routerId = packetNetData.getRouterId();
             int msgId = packetNetData.getMsgId();
-            int routerType = packetNetData.getRouterType();
-            int token = packetNetData.getToken();
-            int indicationIndex = packetNetData.getIndicationIndex();
-            int index = packetNetData.getIndex();
-
-            if(!GatewayApp.start) {
-
-                return;
-            }
+            int seq = packetNetData.getSeq();
 
 
-            LOGGER.error("onMessage->uid={},msyId={},routerType={},indicationIndex={},index={}", routerId, msgId, routerType, indicationIndex, index);
+            Common.client_info client_info = Common.client_info.newBuilder().setUserName("justin").build();
+            Login.test1 test1 = Login.test1.newBuilder().setA(1).build();
+            Login.rsp_login rsp = Login.rsp_login.newBuilder().
+                    setResult(1).setGameTime(3000).setStatus(2).
+                    setClientInfo(client_info).
+                    setTest(test1).build();
+
+
+            MessageUtils.sendMessage(session,seq, MsgIDDefineDic.LOGIN_RSP_LOGIN, rsp.toByteArray(),true);
+
+            MessageDispatcher.dispatch(session, packetNetData);
 
             //转发数据
         } catch (Exception e) {

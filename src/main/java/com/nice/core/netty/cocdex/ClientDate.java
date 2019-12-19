@@ -1,6 +1,6 @@
 package com.nice.core.netty.cocdex;
 
-import com.nice.gatway.parser.Tea;
+import com.nice.gatway.cocdex.Tea;
 
 public class ClientDate {
     //°ü³¤2  uid 4  msgid 4   result 4   index4

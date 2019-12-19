@@ -1,7 +1,7 @@
 package com.nice.gatway;
 
 import com.nice.core.utils.CtxUtil;
-import com.nice.gatway.parser.Tea;
+import com.nice.gatway.cocdex.Tea;
 import com.nice.core.netty.session.Session;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.group.ChannelGroup;

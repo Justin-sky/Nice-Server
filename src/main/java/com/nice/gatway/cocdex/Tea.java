@@ -1,8 +1,9 @@
-package com.nice.gatway.parser;
+package com.nice.gatway.cocdex;
 
 import com.nice.core.netty.cocdex.ClientDate;
 import com.nice.core.netty.cocdex.NetData;
 import com.nice.core.utils.TimeUtil;
+import com.nice.gatway.parser.PacketNetData;
 
 import java.util.Random;
 
@@ -113,32 +114,6 @@ public class Tea {
         System.arraycopy(decryptContent, 0, bys, 0, len);
         return bys;
     }
-    public static byte[] encrypt3(NetData netData, int[] key) {
-        //4:routerId, 1:routerType+reqestType
-        //取8的整数倍长度
-        int length = netData.getContent().length + 4 + 1;
-        byte[] plainText = new byte[length];
-
-        intToByte(plainText, 0, netData.getRouterId());
-        plainText[4] = netData.getRouterType();
-        System.arraycopy(netData.getContent(), 0, plainText, 5, netData.getContent().length);
-//        System.out.println("plainText->");
-//        PrintHex.printBarry(plainText);
-        byte[] encrypt = encrypt2(plainText, key);
-//        System.out.println("encrypt->");
-//        PrintHex.printBarry(encrypt);
-        return encrypt;
-    }
-
-    public static PacketNetData decrypt3(int length, byte[] encryptContent, int offset, int[] key){
-        byte[] decryptContent = decrypt2(encryptContent, length, offset, key);
-        PacketNetData packetNetData = new PacketNetData();
-        packetNetData.setPacketData(decryptContent);
-
-        return packetNetData;
-    }
-
-
 
 
     //byte[]型数据转成int[]型数据
@@ -161,68 +136,5 @@ public class Tea {
     }
 
 
-    public static ClientDate decrypt4(int length, byte[] encryptContent, int offset, int[] key) {
-        byte[] decryptContent = decrypt2(encryptContent, length, offset, key);
-        ClientDate clientDate = new ClientDate();
-        clientDate.setClientDate(decryptContent);
 
-        return clientDate;
-    }
-
-    public static void main(String[] args){
-        String plainStr = "To the time to life, rather than to life in time to the time to life, rather than to life in time.";
-        System.out.println("plainStr=" + plainStr);
-        byte[] encryptBys = encrypt2(plainStr.getBytes(), KEY);
-        int length = byteToShort(encryptBys, 0);
-        int length2 = (length+7)/8*8;
-        byte[] encryptBys2 = new byte[length2];
-        System.arraycopy(encryptBys, 2, encryptBys2, 0, length2);
-        byte[] decodeBys = decrypt2(encryptBys2, length2, 0, KEY);
-        String decryptStr = new String(decodeBys);
-        System.out.println("decryptStr=" + decryptStr);
-
-        NetData netData = new NetData();
-        long startTime = TimeUtil.currentTimeMillis();
-        netData.setContent(new byte[50]);
-        for(int i=0; i<netData.getContent().length; i++){
-            netData.getContent()[i] = (byte)i;
-        }
-        netData.setRouterId(1);
-        netData.setRouterType((byte)2);
-        for(int i=0; i<100000; i++){
-            byte[] secretInfo = encrypt3(netData,  KEY);
-            length = byteToShort(secretInfo, 0);
-
-            length2 = (length+7)/8*8;
-            encryptBys2 = new byte[length2];
-            System.arraycopy(secretInfo, 2, encryptBys2, 0, length2);
-
-            PacketNetData packetNetData = decrypt3(length, encryptBys2, 0, KEY );
-
-            if(netData.getRouterId() != packetNetData.getRouterId()){
-                System.out.println("netData.routerId != netData2.routerId");
-                return;
-            }
-            if(netData.getRouterType() != packetNetData.getRouterType()){
-                System.out.println("netData.routerType != netData2.routerType");
-                return;
-            }
-
-            byte[] data = packetNetData.getMsgIdAndPBData();
-            if(netData.getContent().length != data.length){
-                System.out.println("netData.content.length != netData2.content.length");
-                return;
-            }
-            int j;
-            for(j=0; j<netData.getContent().length; j++){
-                if(netData.getContent()[j] != data[j]) {
-                    System.out.println("decryptInfo[j] != info[j]");
-                    return;
-                }
-            }
-        }
-        long endTime = TimeUtil.currentTimeMillis();
-        //加解密10万，用时91毫秒
-        System.out.println("加解密10万，用时" + (endTime-startTime) + "毫秒");
-    }
 }

@@ -1,5 +1,7 @@
 package com.nice.gatway.parser;
 
+import com.nice.core.utils.ByteUtil;
+
 public class PacketNetData {
     //
     private byte[] packetData;
@@ -11,30 +13,15 @@ public class PacketNetData {
         this.packetData = packetData;
     }
 
-    public int getRouterId() {
-        return Tea.byteToInt(packetData, 0);
-    }
 
-    public byte getRouterType() {
-        return (packetData[4]);
+    public int getSeq() {
+        return ByteUtil.bytesToInt(packetData, 0);
     }
-
 
     public int getMsgId() {
-        return Tea.byteToInt(packetData, 5);
+        return ByteUtil.bytesToInt(packetData, 4);
     }
 
-    public int getIndex() {
-        return Tea.byteToInt(packetData, 9);
-    }
-
-    public int getIndicationIndex() {
-        return Tea.byteToShort(packetData, 13);
-    }
-
-    public int getToken() {
-        return Tea.byteToInt(packetData, 15);
-    }
 
 
     /**
@@ -43,19 +30,8 @@ public class PacketNetData {
      * @return
      */
     public byte[] parseProtoNetData() {
-        byte[] data = new byte[packetData.length - 19];
-        System.arraycopy(packetData, 19, data, 0, data.length);
-        return data;
-    }
-
-    /**
-     * 获取协议加消息id字节数据
-     *
-     * @return
-     */
-    public byte[] getMsgIdAndPBData() {
-        byte[] data = new byte[packetData.length - 5];
-        System.arraycopy(packetData, 5, data, 0, data.length);
+        byte[] data = new byte[packetData.length - 8];
+        System.arraycopy(packetData, 8, data, 0, data.length);
         return data;
     }
 

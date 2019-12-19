@@ -1,4 +1,5 @@
 package com.nice.gatway.cocdex;
+import com.nice.core.utils.ByteUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -7,20 +8,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ChannelHandler.Sharable
-public class ByteBufEncoder extends MessageToByteEncoder<byte[]> {
+public class ByteBufEncoder extends MessageToByteEncoder<ByteBuf> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ByteBufDecoder.class);
 
     public ByteBufEncoder(){
     }
+
     @Override
-    protected void encode(ChannelHandlerContext ctx, byte[] msg, ByteBuf out)  {
-        try {
-            //²»¼ÓÃÜ
-            out.writeShort((short) msg.length);
-            out.writeBytes(msg, 0, msg.length);
-        } catch (Exception e){
-            LOGGER.error("encode->emsg={}", e.getMessage(), e);
-        }
+    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) throws Exception {
+        int bodyLen = msg.readableBytes();
+        int headerLen = 4;
+        out.ensureWritable(headerLen + bodyLen);
+
+        byte[] headerByte = ByteUtil.intToBytes(bodyLen);
+
+        out.writeBytes(headerByte, 0, headerLen);
+        out.writeBytes(msg, msg.readerIndex(), bodyLen);
+
     }
+
 }
 
