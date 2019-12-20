@@ -2,6 +2,7 @@
 package net.protol;
 public class MsgIDDefineDic
 {
+	public static final int COMMON_HEART_BEAT = 9001; 
 	public static final int LOGIN_REQ_LOGIN = 1001; //登录请求
 	public static final int LOGIN_RSP_LOGIN = 1002; //登录回复
 	public static final int LOGIN_NTF_LOGOUT = 1101; //登出

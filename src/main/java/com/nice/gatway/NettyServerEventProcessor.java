@@ -33,6 +33,8 @@ public class NettyServerEventProcessor implements NettyEventProcessorInterface {
             int msgId = packetNetData.getMsgId();
             int seq = packetNetData.getSeq();
 
+            //ºöÂÔÐÄÌø°ü
+            if (msgId == MsgIDDefineDic.COMMON_HEART_BEAT) return;
 
             Common.client_info client_info = Common.client_info.newBuilder().setUserName("justin").build();
             Login.test1 test1 = Login.test1.newBuilder().setA(1).build();
